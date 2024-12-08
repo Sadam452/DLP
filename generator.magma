@@ -1,0 +1,54 @@
+//This program finds the generatorsa of a field.
+BaseField := GF(2);
+P1<Z> := PolynomialRing(BaseField);
+F1<z> := ext<BaseField | Z^9 + Z + 1>;
+//g1 := z^3 + 1;
+//g1 := z^2 + z + 1
+P2<Y> := PolynomialRing(F1);
+F2<y> := ext<F1 | Y^2 + (z + 1)*Y + z^4>;
+//g2 := y + z^3;
+//g2:=[y + z^6, y + z^3];
+P3<X> := PolynomialRing(F2);
+F3<x> := ext<F2 | X^511 + z^3 + 1>;
+
+//g1 and g2 are the generator of Fq and Fq^2 field.
+
+q := 512;
+k := q-1;
+h0 := (z^3 + 1)*x;
+h1 := 1;
+
+// Find generators of the field F3
+generators := [];
+for i in F3 do
+    g := 1;
+    for j in [1..2^(q*2*511)] do
+        g := 1;
+        //"Probable generator is: ", g;
+        if g eq 1 and j eq (2^(q*2*511) - 1) then
+          Append(~generators, i);
+            break;
+        end if;
+    end for;
+end for;
+"Generators calculated";
+
+// Now find linear monic polynomials among the generators
+// Open a file for writing
+// Open a file for writing with "Create" mode
+// Open a file for writing using POpen
+file := POpen("cat > generators.txt", "w");
+
+// Loop through the generators and check for linear monic generators
+for poly in generators do
+    //poly;
+    poly_as_poly := Polynomial(poly);
+    if Degree(poly_as_poly) eq 1 and LeadingCoefficient(poly_as_poly) eq 1 then
+        // Write the linear monic generator to the file
+        fprintf file, "%o\n", poly_as_poly;
+        poly;
+    end if;
+end for;
+"Monic Generators Found";
+// Close the file using 'delete' to ensure the file handle is released
+delete file;

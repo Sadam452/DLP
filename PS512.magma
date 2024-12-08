@@ -1,0 +1,71 @@
+//
+BaseField := GF(2);
+P1<Z> := PolynomialRing(BaseField);
+F1<z> := ext<BaseField | Z^9 + Z + 1>;
+//g1 := z^3 + 1;
+//g1 := z^2 + z + 1
+P2<Y> := PolynomialRing(F1);
+F2<y> := ext<F1 | Y^2 + (z + 1)*Y + z^4>;
+//g2 := y + z^3;
+//g2:=[y + z^6, y + z^3];
+P3<X> := PolynomialRing(F2);
+/*
+F3<x> := ext<F2 | X^511 + z^3 + 1>;
+*/
+
+
+q := 512;
+k := q-1;
+"Start";
+// list contains all 3 variable polynomial with highest degree 1, 
+// we can add one more loop to add polynomials with degree 2
+// Our goal is consider lower degree polynomial for h1 and h0
+count := 0;
+list := [];
+for i in F2 do
+    if i eq 0 or i eq 1 then continue; end if;;
+    for j in F2 do
+        if i eq 0 or i eq 1 then continue; end if;
+        poly := i*X + j;
+        Append(~list, poly);
+        count := count +1 ;
+        if count eq 5 then break; end if;
+    end for;
+    if count eq 5 then break; end if;
+end for;
+Append(~list, 1);
+#list;
+ireeducible_polynomial := 1;
+h0_poly := 1;
+h1_poly := 1;
+count := 0;
+
+
+F:= Open("h0_h1.txt","w");
+Write(F,"");
+for h1 in list do
+    if h1 eq 0 then continue; end if;
+    for h0 in list do
+        res := h1*X^q - h0;
+        factors := Factorization(res);
+        for fact in factors do
+            if Degree(fact[1]) eq k then
+                AsyncWrite(F, "h0:" cat Sprint(h0));
+                AsyncWrite(F,"\nh1:" cat Sprint(h1));
+                AsyncWrite(F,"\nm(x):" cat Sprint(fact[1]));
+                //"h0:", h0;
+                //"h1:", h1;
+                //"m(x):", fact;
+                count := count + 1;
+                ireeducible_polynomial := fact;
+                h0_poly := h0;
+                h1_poly := h1;
+                AsyncWrite(F,"\n====================================================================\n");
+                break;
+            end if;
+        end for;
+    end for;
+end for;
+
+F3<x> := ext<F2 | ireeducible_polynomial[1]>;
+"finished ", count;
