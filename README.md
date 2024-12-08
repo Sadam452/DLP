@@ -1,4 +1,5 @@
 # Discrete Logarithm Problem Solver (Quasi-Polynomial Time)
+**The code will be made available in due time**.
 
 This project implements a quasi-polynomial time algorithm for solving the **Discrete Logarithm Problem (DLP)** in finite fields. The algorithm is divided into three key phases: **Polynomial Selection**, **Relation Collection**, and **Recursive Descent**. The field setup includes the base field $${F_q}$$, $$F_{q^2}$$, and $$F_{q^{2^k}}$$, where $${k = q-1}$$.
 
